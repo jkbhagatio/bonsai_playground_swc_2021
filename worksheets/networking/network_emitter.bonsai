@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WorkflowBuilder Version="2.6.2"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xmlns:osc="clr-namespace:Bonsai.Osc;assembly=Bonsai.Osc"
+                 xmlns:wie="clr-namespace:Bonsai.Windows.Input;assembly=Bonsai.Windows.Input"
+                 xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
+                 xmlns:vid="clr-namespace:Bonsai.Video;assembly=Bonsai.Video"
+                 xmlns:dsp="clr-namespace:Bonsai.Dsp;assembly=Bonsai.Dsp"
+                 xmlns="https://bonsai-rx.org/2018/workflow">
+  <Workflow>
+    <Nodes>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>udp</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="osc:CreateUdpClient">
+                  <osc:Name>Emitter</osc:Name>
+                  <osc:Port>0</osc:Port>
+                  <osc:RemoteHostName>localhost</osc:RemoteHostName>
+                  <osc:RemotePort>2111</osc:RemotePort>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="wie:MouseMove" />
+              </Expression>
+              <Expression xsi:type="MemberSelector">
+                <Selector>X</Selector>
+              </Expression>
+              <Expression xsi:type="osc:SendMessage">
+                <osc:Connection>Emitter</osc:Connection>
+                <osc:Address>/127.0.0.1</osc:Address>
+              </Expression>
+            </Nodes>
+            <Edges>
+              <Edge From="1" To="2" Label="Source1" />
+              <Edge From="2" To="3" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>tcp</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="osc:CreateTcpServer">
+                  <osc:Name>Emitter</osc:Name>
+                  <osc:Port>2111</osc:Port>
+                  <osc:NoDelay>false</osc:NoDelay>
+                  <osc:AllowNatTraversal>false</osc:AllowNatTraversal>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:Timer">
+                  <rx:DueTime>PT1S</rx:DueTime>
+                  <rx:Period>PT1S</rx:Period>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="IntProperty">
+                  <Value>1</Value>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="rx:Accumulate" />
+              <Expression xsi:type="osc:SendMessage">
+                <osc:Connection>Emitter</osc:Connection>
+                <osc:Address>/127.0.0.1</osc:Address>
+              </Expression>
+            </Nodes>
+            <Edges>
+              <Edge From="1" To="2" Label="Source1" />
+              <Edge From="2" To="3" Label="Source1" />
+              <Edge From="3" To="4" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>stream_image_tcp</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="osc:CreateTcpServer">
+                  <osc:Name>Emitter</osc:Name>
+                  <osc:Port>2111</osc:Port>
+                  <osc:NoDelay>false</osc:NoDelay>
+                  <osc:AllowNatTraversal>false</osc:AllowNatTraversal>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="wie:MouseMove" />
+              </Expression>
+              <Expression xsi:type="MemberSelector">
+                <Selector>X</Selector>
+              </Expression>
+              <Expression xsi:type="osc:SendMessage">
+                <osc:Connection>Emitter</osc:Connection>
+                <osc:Address>/mouse</osc:Address>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="vid:VideoCaptureDevice">
+                  <vid:Index>0</vid:Index>
+                  <vid:CaptureProperties />
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="dsp:ConvertToArray">
+                <dsp:Depth xsi:nil="true" />
+              </Expression>
+              <Expression xsi:type="osc:SendMessage">
+                <osc:Connection>Emitter</osc:Connection>
+                <osc:Address>/image_centroid</osc:Address>
+              </Expression>
+            </Nodes>
+            <Edges>
+              <Edge From="1" To="2" Label="Source1" />
+              <Edge From="2" To="3" Label="Source1" />
+              <Edge From="4" To="5" Label="Source1" />
+              <Edge From="5" To="6" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+    </Nodes>
+    <Edges />
+  </Workflow>
+</WorkflowBuilder>

@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WorkflowBuilder Version="2.6.2"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xmlns:osc="clr-namespace:Bonsai.Osc;assembly=Bonsai.Osc"
+                 xmlns:dsp="clr-namespace:Bonsai.Dsp;assembly=Bonsai.Dsp"
+                 xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
+                 xmlns="https://bonsai-rx.org/2018/workflow">
+  <Workflow>
+    <Nodes>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>udp</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="osc:CreateUdpClient">
+                  <osc:Name>Receiver</osc:Name>
+                  <osc:Port>2111</osc:Port>
+                  <osc:RemoteHostName>localhost</osc:RemoteHostName>
+                  <osc:RemotePort>0</osc:RemotePort>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="osc:ReceiveMessage">
+                <osc:Address>/127.0.0.1</osc:Address>
+                <osc:TypeTag>i</osc:TypeTag>
+                <osc:Connection>Receiver</osc:Connection>
+              </Expression>
+            </Nodes>
+            <Edges />
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>tcp</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="osc:CreateTcpClient">
+                  <osc:Name>Receiver</osc:Name>
+                  <osc:HostName>localhost</osc:HostName>
+                  <osc:Port>2111</osc:Port>
+                  <osc:NoDelay>false</osc:NoDelay>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="osc:ReceiveMessage">
+                <osc:Address />
+                <osc:TypeTag>i</osc:TypeTag>
+                <osc:Connection>Receiver</osc:Connection>
+              </Expression>
+            </Nodes>
+            <Edges />
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>stream_image_tcp</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="osc:CreateTcpClient">
+                  <osc:Name>Receiver</osc:Name>
+                  <osc:HostName>localhost</osc:HostName>
+                  <osc:Port>2111</osc:Port>
+                  <osc:NoDelay>false</osc:NoDelay>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="osc:ReceiveMessage">
+                <osc:Address>/mouse</osc:Address>
+                <osc:TypeTag>i</osc:TypeTag>
+                <osc:Connection>Receiver</osc:Connection>
+              </Expression>
+              <Expression xsi:type="osc:ReceiveMessage">
+                <osc:Address>/image_centroid</osc:Address>
+                <osc:TypeTag>b</osc:TypeTag>
+                <osc:Connection>Receiver</osc:Connection>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="dsp:ConvertFromArray">
+                  <dsp:Size>
+                    <dsp:Width>0</dsp:Width>
+                    <dsp:Height>0</dsp:Height>
+                  </dsp:Size>
+                  <dsp:Depth xsi:nil="true" />
+                  <dsp:Channels xsi:nil="true" />
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="dsp:Reshape">
+                  <dsp:Channels>3</dsp:Channels>
+                  <dsp:Rows>480</dsp:Rows>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:ConvertToImage" />
+              </Expression>
+            </Nodes>
+            <Edges>
+              <Edge From="2" To="3" Label="Source1" />
+              <Edge From="3" To="4" Label="Source1" />
+              <Edge From="4" To="5" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+    </Nodes>
+    <Edges />
+  </Workflow>
+</WorkflowBuilder>

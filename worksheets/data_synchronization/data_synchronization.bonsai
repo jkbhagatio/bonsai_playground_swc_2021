@@ -1,0 +1,552 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WorkflowBuilder Version="2.6.2"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xmlns:vid="clr-namespace:Bonsai.Video;assembly=Bonsai.Video"
+                 xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
+                 xmlns:dsp="clr-namespace:Bonsai.Dsp;assembly=Bonsai.Dsp"
+                 xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
+                 xmlns:ard="clr-namespace:Bonsai.Arduino;assembly=Bonsai.Arduino"
+                 xmlns:io="clr-namespace:Bonsai.IO;assembly=Bonsai.System"
+                 xmlns:viz="clr-namespace:Bonsai.Design.Visualizers;assembly=Bonsai.Design.Visualizers"
+                 xmlns="https://bonsai-rx.org/2018/workflow">
+  <Workflow>
+    <Nodes>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>exercise1_test_video_sync</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="vid:VideoCaptureDevice">
+                  <vid:Index>0</vid:Index>
+                  <vid:Format>
+                    <vid:FrameSize>
+                      <vid:Width>1920</vid:Width>
+                      <vid:Height>1080</vid:Height>
+                    </vid:FrameSize>
+                    <vid:AverageFrameRate>60</vid:AverageFrameRate>
+                    <vid:MaximumFrameRate>60</vid:MaximumFrameRate>
+                    <vid:BitCount>24</vid:BitCount>
+                  </vid:Format>
+                  <vid:CaptureProperties />
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="vid:VideoCaptureDevice">
+                  <vid:Index>1</vid:Index>
+                  <vid:Format>
+                    <vid:FrameSize>
+                      <vid:Width>640</vid:Width>
+                      <vid:Height>480</vid:Height>
+                    </vid:FrameSize>
+                    <vid:AverageFrameRate>30</vid:AverageFrameRate>
+                    <vid:MaximumFrameRate>30</vid:MaximumFrameRate>
+                    <vid:BitCount>24</vid:BitCount>
+                  </vid:Format>
+                  <vid:CaptureProperties />
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:WithLatestFrom" />
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="dsp:Concat">
+                  <dsp:Axis>1</dsp:Axis>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:VideoWriter">
+                  <cv:Suffix>None</cv:Suffix>
+                  <cv:Buffered>true</cv:Buffered>
+                  <cv:Overwrite>false</cv:Overwrite>
+                  <cv:FourCC>FMP4</cv:FourCC>
+                  <cv:FrameRate>30</cv:FrameRate>
+                  <cv:FrameSize>
+                    <cv:Width>0</cv:Width>
+                    <cv:Height>0</cv:Height>
+                  </cv:FrameSize>
+                  <cv:ResizeInterpolation>NearestNeighbor</cv:ResizeInterpolation>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:FileCapture">
+                  <cv:PlaybackRate>0</cv:PlaybackRate>
+                  <cv:StartPosition>0</cv:StartPosition>
+                  <cv:PositionUnits>Frames</cv:PositionUnits>
+                  <cv:Loop>false</cv:Loop>
+                  <cv:Playing>false</cv:Playing>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="WorkflowOutput" />
+            </Nodes>
+            <Edges>
+              <Edge From="0" To="2" Label="Source1" />
+              <Edge From="1" To="2" Label="Source2" />
+              <Edge From="2" To="3" Label="Source1" />
+              <Edge From="3" To="4" Label="Source1" />
+              <Edge From="4" To="5" Label="Source1" />
+              <Edge From="5" To="6" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>exercise2_fixed_interval_repeating_stim</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="ard:CreateArduino">
+                  <ard:PortName>COM9</ard:PortName>
+                  <ard:BaudRate>57600</ard:BaudRate>
+                  <ard:SamplingInterval>10</ard:SamplingInterval>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:Timer">
+                  <rx:DueTime>PT1S</rx:DueTime>
+                  <rx:Period>PT0S</rx:Period>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="BooleanProperty">
+                  <Value>true</Value>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="ard:DigitalOutput">
+                  <ard:PortName>COM9</ard:PortName>
+                  <ard:Pin>13</ard:Pin>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="ard:DigitalOutput">
+                  <ard:PortName>COM9</ard:PortName>
+                  <ard:Pin>12</ard:Pin>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:Delay">
+                  <rx:DueTime>PT0.2S</rx:DueTime>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="BooleanProperty">
+                  <Value>false</Value>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="ard:DigitalOutput">
+                  <ard:PortName>COM9</ard:PortName>
+                  <ard:Pin>13</ard:Pin>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="ard:DigitalOutput">
+                  <ard:PortName>COM9</ard:PortName>
+                  <ard:Pin>12</ard:Pin>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:Repeat" />
+              </Expression>
+            </Nodes>
+            <Edges>
+              <Edge From="1" To="2" Label="Source1" />
+              <Edge From="2" To="3" Label="Source1" />
+              <Edge From="3" To="4" Label="Source1" />
+              <Edge From="4" To="5" Label="Source1" />
+              <Edge From="5" To="6" Label="Source1" />
+              <Edge From="6" To="7" Label="Source1" />
+              <Edge From="7" To="8" Label="Source1" />
+              <Edge From="8" To="9" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>exercise3_reaction_time</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="ard:AnalogInput">
+                  <ard:PortName>COM9</ard:PortName>
+                  <ard:Pin>5</ard:Pin>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="ard:AnalogInput">
+                  <ard:PortName>COM9</ard:PortName>
+                  <ard:Pin>0</ard:Pin>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:Zip" />
+              </Expression>
+              <Expression xsi:type="io:CsvWriter">
+                <io:FileName>exercise3.csv</io:FileName>
+                <io:Append>false</io:Append>
+                <io:Overwrite>true</io:Overwrite>
+                <io:Suffix>None</io:Suffix>
+                <io:IncludeHeader>false</io:IncludeHeader>
+              </Expression>
+              <Expression xsi:type="viz:RollingGraphBuilder">
+                <viz:Capacity>1000</viz:Capacity>
+              </Expression>
+              <Expression xsi:type="WorkflowOutput" />
+            </Nodes>
+            <Edges>
+              <Edge From="0" To="2" Label="Source2" />
+              <Edge From="1" To="2" Label="Source1" />
+              <Edge From="2" To="3" Label="Source1" />
+              <Edge From="3" To="4" Label="Source1" />
+              <Edge From="4" To="5" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>exercise4_sync_video_with_visual_stim</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="vid:VideoCaptureDevice">
+                  <vid:Index>0</vid:Index>
+                  <vid:CaptureProperties />
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:VideoWriter">
+                  <cv:FileName>exercise4.avi</cv:FileName>
+                  <cv:Suffix>None</cv:Suffix>
+                  <cv:Buffered>true</cv:Buffered>
+                  <cv:Overwrite>true</cv:Overwrite>
+                  <cv:FourCC>FMP4</cv:FourCC>
+                  <cv:FrameRate>30</cv:FrameRate>
+                  <cv:FrameSize>
+                    <cv:Width>0</cv:Width>
+                    <cv:Height>0</cv:Height>
+                  </cv:FrameSize>
+                  <cv:ResizeInterpolation>NearestNeighbor</cv:ResizeInterpolation>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:Crop">
+                  <cv:RegionOfInterest>
+                    <cv:X>226</cv:X>
+                    <cv:Y>197</cv:Y>
+                    <cv:Width>185</cv:Width>
+                    <cv:Height>141</cv:Height>
+                  </cv:RegionOfInterest>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:Grayscale" />
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="dsp:Sum" />
+              </Expression>
+              <Expression xsi:type="MemberSelector">
+                <Selector>Val0</Selector>
+              </Expression>
+              <Expression xsi:type="io:CsvWriter">
+                <io:FileName>exercise4.csv</io:FileName>
+                <io:Append>false</io:Append>
+                <io:Overwrite>true</io:Overwrite>
+                <io:Suffix>None</io:Suffix>
+                <io:IncludeHeader>false</io:IncludeHeader>
+              </Expression>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="Combinator">
+                  <Combinator xsi:type="cv:FileCapture">
+                    <cv:FileName>exercise4.avi</cv:FileName>
+                    <cv:PlaybackRate>0</cv:PlaybackRate>
+                    <cv:StartPosition>0</cv:StartPosition>
+                    <cv:PositionUnits>Frames</cv:PositionUnits>
+                    <cv:Loop>false</cv:Loop>
+                    <cv:Playing>false</cv:Playing>
+                  </Combinator>
+                </Builder>
+              </Expression>
+              <Expression xsi:type="WorkflowOutput" />
+            </Nodes>
+            <Edges>
+              <Edge From="0" To="1" Label="Source1" />
+              <Edge From="1" To="2" Label="Source1" />
+              <Edge From="2" To="3" Label="Source1" />
+              <Edge From="3" To="4" Label="Source1" />
+              <Edge From="4" To="5" Label="Source1" />
+              <Edge From="5" To="6" Label="Source1" />
+              <Edge From="6" To="7" Label="Source1" />
+              <Edge From="7" To="8" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>exercise5_trigerred_visual_stim</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="ard:AnalogInput">
+                  <ard:PortName>COM9</ard:PortName>
+                  <ard:Pin>5</ard:Pin>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="GreaterThan">
+                <Operand xsi:type="IntProperty">
+                  <Value>100</Value>
+                </Operand>
+              </Expression>
+              <Expression xsi:type="Condition">
+                <Workflow>
+                  <Nodes>
+                    <Expression xsi:type="WorkflowInput">
+                      <Name>Source1</Name>
+                    </Expression>
+                    <Expression xsi:type="WorkflowOutput" />
+                  </Nodes>
+                  <Edges>
+                    <Edge From="0" To="1" Label="Source1" />
+                  </Edges>
+                </Workflow>
+              </Expression>
+              <Expression xsi:type="SelectMany">
+                <Workflow>
+                  <Nodes>
+                    <Expression xsi:type="Disable">
+                      <Builder xsi:type="WorkflowInput">
+                        <Name>Source1</Name>
+                      </Builder>
+                    </Expression>
+                    <Expression xsi:type="Disable">
+                      <Builder xsi:type="WorkflowOutput" />
+                    </Expression>
+                    <Expression xsi:type="Combinator">
+                      <Combinator xsi:type="rx:Timer">
+                        <rx:DueTime>PT1S</rx:DueTime>
+                        <rx:Period>PT1S</rx:Period>
+                      </Combinator>
+                    </Expression>
+                    <Expression xsi:type="Combinator">
+                      <Combinator xsi:type="BooleanProperty">
+                        <Value>true</Value>
+                      </Combinator>
+                    </Expression>
+                    <Expression xsi:type="Combinator">
+                      <Combinator xsi:type="ard:DigitalOutput">
+                        <ard:PortName>COM9</ard:PortName>
+                        <ard:Pin>13</ard:Pin>
+                      </Combinator>
+                    </Expression>
+                    <Expression xsi:type="Combinator">
+                      <Combinator xsi:type="rx:Delay">
+                        <rx:DueTime>PT0.2S</rx:DueTime>
+                      </Combinator>
+                    </Expression>
+                    <Expression xsi:type="Combinator">
+                      <Combinator xsi:type="BooleanProperty">
+                        <Value>false</Value>
+                      </Combinator>
+                    </Expression>
+                    <Expression xsi:type="Combinator">
+                      <Combinator xsi:type="ard:DigitalOutput">
+                        <ard:PortName>COM9</ard:PortName>
+                        <ard:Pin>13</ard:Pin>
+                      </Combinator>
+                    </Expression>
+                    <Expression xsi:type="Combinator">
+                      <Combinator xsi:type="rx:Take">
+                        <rx:Count>5</rx:Count>
+                      </Combinator>
+                    </Expression>
+                    <Expression xsi:type="WorkflowOutput" />
+                  </Nodes>
+                  <Edges>
+                    <Edge From="0" To="1" Label="Source1" />
+                    <Edge From="2" To="3" Label="Source1" />
+                    <Edge From="3" To="4" Label="Source1" />
+                    <Edge From="4" To="5" Label="Source1" />
+                    <Edge From="5" To="6" Label="Source1" />
+                    <Edge From="6" To="7" Label="Source1" />
+                    <Edge From="7" To="8" Label="Source1" />
+                    <Edge From="8" To="9" Label="Source1" />
+                  </Edges>
+                </Workflow>
+              </Expression>
+              <Expression xsi:type="WorkflowOutput" />
+            </Nodes>
+            <Edges>
+              <Edge From="0" To="1" Label="Source1" />
+              <Edge From="1" To="2" Label="Source1" />
+              <Edge From="2" To="3" Label="Source1" />
+              <Edge From="3" To="4" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>exercise6_triggered_video</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="ard:AnalogInput">
+                  <ard:PortName>COM9</ard:PortName>
+                  <ard:Pin>5</ard:Pin>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="GreaterThan">
+                <Operand xsi:type="IntProperty">
+                  <Value>100</Value>
+                </Operand>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:DistinctUntilChanged" />
+              </Expression>
+              <Expression xsi:type="Condition">
+                <Workflow>
+                  <Nodes>
+                    <Expression xsi:type="WorkflowInput">
+                      <Name>Source1</Name>
+                    </Expression>
+                    <Expression xsi:type="WorkflowOutput" />
+                  </Nodes>
+                  <Edges>
+                    <Edge From="0" To="1" Label="Source1" />
+                  </Edges>
+                </Workflow>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="vid:VideoCaptureDevice">
+                  <vid:Index>0</vid:Index>
+                  <vid:CaptureProperties />
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:VideoWriter">
+                  <cv:FileName>exercise6.avi</cv:FileName>
+                  <cv:Suffix>None</cv:Suffix>
+                  <cv:Buffered>true</cv:Buffered>
+                  <cv:Overwrite>true</cv:Overwrite>
+                  <cv:FourCC>FMP4</cv:FourCC>
+                  <cv:FrameRate>30</cv:FrameRate>
+                  <cv:FrameSize>
+                    <cv:Width>0</cv:Width>
+                    <cv:Height>0</cv:Height>
+                  </cv:FrameSize>
+                  <cv:ResizeInterpolation>NearestNeighbor</cv:ResizeInterpolation>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:Delay">
+                  <rx:DueTime>PT0S</rx:DueTime>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:TriggeredWindow">
+                  <rx:Count xsi:nil="true" />
+                  <rx:TimeSpan>PT2S</rx:TimeSpan>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="SelectMany">
+                <Workflow>
+                  <Nodes>
+                    <Expression xsi:type="WorkflowInput">
+                      <Name>Source1</Name>
+                    </Expression>
+                    <Expression xsi:type="Combinator">
+                      <Combinator xsi:type="cv:VideoWriter">
+                        <cv:FileName>exercise6_trigger_.avi</cv:FileName>
+                        <cv:Suffix>Timestamp</cv:Suffix>
+                        <cv:Buffered>true</cv:Buffered>
+                        <cv:Overwrite>false</cv:Overwrite>
+                        <cv:FourCC>FMP4</cv:FourCC>
+                        <cv:FrameRate>30</cv:FrameRate>
+                        <cv:FrameSize>
+                          <cv:Width>0</cv:Width>
+                          <cv:Height>0</cv:Height>
+                        </cv:FrameSize>
+                        <cv:ResizeInterpolation>NearestNeighbor</cv:ResizeInterpolation>
+                      </Combinator>
+                    </Expression>
+                    <Expression xsi:type="Combinator">
+                      <Combinator xsi:type="BooleanProperty">
+                        <Value>true</Value>
+                      </Combinator>
+                    </Expression>
+                    <Expression xsi:type="Combinator">
+                      <Combinator xsi:type="ard:DigitalOutput">
+                        <ard:PortName>COM9</ard:PortName>
+                        <ard:Pin>13</ard:Pin>
+                      </Combinator>
+                    </Expression>
+                    <Expression xsi:type="Combinator">
+                      <Combinator xsi:type="rx:Delay">
+                        <rx:DueTime>PT5S</rx:DueTime>
+                      </Combinator>
+                    </Expression>
+                    <Expression xsi:type="Combinator">
+                      <Combinator xsi:type="BooleanProperty">
+                        <Value>false</Value>
+                      </Combinator>
+                    </Expression>
+                    <Expression xsi:type="Combinator">
+                      <Combinator xsi:type="ard:DigitalOutput">
+                        <ard:PortName>COM9</ard:PortName>
+                        <ard:Pin>13</ard:Pin>
+                      </Combinator>
+                    </Expression>
+                    <Expression xsi:type="WorkflowOutput" />
+                  </Nodes>
+                  <Edges>
+                    <Edge From="0" To="1" Label="Source1" />
+                    <Edge From="1" To="2" Label="Source1" />
+                    <Edge From="2" To="3" Label="Source1" />
+                    <Edge From="3" To="4" Label="Source1" />
+                    <Edge From="4" To="5" Label="Source1" />
+                    <Edge From="5" To="6" Label="Source1" />
+                    <Edge From="6" To="7" Label="Source1" />
+                  </Edges>
+                </Workflow>
+              </Expression>
+              <Expression xsi:type="WorkflowOutput" />
+            </Nodes>
+            <Edges>
+              <Edge From="0" To="1" Label="Source1" />
+              <Edge From="1" To="2" Label="Source1" />
+              <Edge From="2" To="3" Label="Source1" />
+              <Edge From="3" To="7" Label="Source2" />
+              <Edge From="4" To="5" Label="Source1" />
+              <Edge From="5" To="6" Label="Source1" />
+              <Edge From="6" To="7" Label="Source1" />
+              <Edge From="7" To="8" Label="Source1" />
+              <Edge From="8" To="9" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="Combinator">
+          <Combinator xsi:type="BooleanProperty">
+            <Value>false</Value>
+          </Combinator>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="Combinator">
+          <Combinator xsi:type="ard:DigitalOutput">
+            <ard:PortName>COM9</ard:PortName>
+            <ard:Pin>13</ard:Pin>
+          </Combinator>
+        </Builder>
+      </Expression>
+    </Nodes>
+    <Edges>
+      <Edge From="6" To="7" Label="Source1" />
+    </Edges>
+  </Workflow>
+</WorkflowBuilder>

@@ -1,0 +1,525 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WorkflowBuilder Version="2.6.2"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xmlns:cv="clr-namespace:Bonsai.Vision;assembly=Bonsai.Vision"
+                 xmlns:al="clr-namespace:Bonsai.Audio;assembly=Bonsai.Audio"
+                 xmlns:dsp="clr-namespace:Bonsai.Dsp;assembly=Bonsai.Dsp"
+                 xmlns:wie="clr-namespace:Bonsai.Windows.Input;assembly=Bonsai.Windows.Input"
+                 xmlns:rx="clr-namespace:Bonsai.Reactive;assembly=Bonsai.Core"
+                 xmlns:ard="clr-namespace:Bonsai.Arduino;assembly=Bonsai.Arduino"
+                 xmlns:io="clr-namespace:Bonsai.IO;assembly=Bonsai.System"
+                 xmlns:vid="clr-namespace:Bonsai.Video;assembly=Bonsai.Video"
+                 xmlns="https://bonsai-rx.org/2018/workflow">
+  <Workflow>
+    <Nodes>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>Exercise_1_2:_Camera_Capture</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="Combinator">
+                  <Combinator xsi:type="cv:CameraCapture">
+                    <cv:Index>0</cv:Index>
+                    <cv:CaptureProperties />
+                  </Combinator>
+                </Builder>
+              </Expression>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="Combinator">
+                  <Combinator xsi:type="cv:Grayscale" />
+                </Builder>
+              </Expression>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="Combinator">
+                  <Combinator xsi:type="cv:VideoWriter">
+                    <cv:FileName>acuqisition_and_tracking2.avi</cv:FileName>
+                    <cv:Suffix>None</cv:Suffix>
+                    <cv:Buffered>true</cv:Buffered>
+                    <cv:Overwrite>false</cv:Overwrite>
+                    <cv:FourCC>FMP4</cv:FourCC>
+                    <cv:FrameRate>30</cv:FrameRate>
+                    <cv:FrameSize>
+                      <cv:Width>0</cv:Width>
+                      <cv:Height>0</cv:Height>
+                    </cv:FrameSize>
+                    <cv:ResizeInterpolation>NearestNeighbor</cv:ResizeInterpolation>
+                  </Combinator>
+                </Builder>
+              </Expression>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="Combinator">
+                  <Combinator xsi:type="cv:VideoWriter">
+                    <cv:FileName>acquisition_and_tracking_grayscale.avi</cv:FileName>
+                    <cv:Suffix>None</cv:Suffix>
+                    <cv:Buffered>true</cv:Buffered>
+                    <cv:Overwrite>false</cv:Overwrite>
+                    <cv:FourCC>FMP4</cv:FourCC>
+                    <cv:FrameRate>30</cv:FrameRate>
+                    <cv:FrameSize>
+                      <cv:Width>0</cv:Width>
+                      <cv:Height>0</cv:Height>
+                    </cv:FrameSize>
+                    <cv:ResizeInterpolation>NearestNeighbor</cv:ResizeInterpolation>
+                  </Combinator>
+                </Builder>
+              </Expression>
+            </Nodes>
+            <Edges>
+              <Edge From="0" To="1" Label="Source1" />
+              <Edge From="0" To="3" Label="Source1" />
+              <Edge From="1" To="2" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>Exercise_3_4:_Audio_Capture</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="Combinator">
+                  <Combinator xsi:type="al:AudioCapture">
+                    <al:SampleRate>44100</al:SampleRate>
+                    <al:SampleFormat>Mono16</al:SampleFormat>
+                    <al:BufferLength>10</al:BufferLength>
+                  </Combinator>
+                </Builder>
+              </Expression>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="Combinator">
+                  <Combinator xsi:type="al:AudioWriter">
+                    <al:FileName>acquisition_and_tracking.wav</al:FileName>
+                    <al:Suffix>None</al:Suffix>
+                    <al:Buffered>true</al:Buffered>
+                    <al:Overwrite>false</al:Overwrite>
+                    <al:SampleRate>44100</al:SampleRate>
+                  </Combinator>
+                </Builder>
+              </Expression>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="Combinator">
+                  <Combinator xsi:type="dsp:MatrixWriter">
+                    <dsp:Path>acquisition_and_tracking._raw.bin</dsp:Path>
+                    <dsp:Suffix>None</dsp:Suffix>
+                    <dsp:Overwrite>false</dsp:Overwrite>
+                    <dsp:Layout>ColumnMajor</dsp:Layout>
+                  </Combinator>
+                </Builder>
+              </Expression>
+            </Nodes>
+            <Edges>
+              <Edge From="0" To="1" Label="Source1" />
+              <Edge From="0" To="2" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>Exercise_5:_Audio_Trigger</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="Combinator">
+                  <Combinator xsi:type="al:AudioReader">
+                    <al:FileName>acquisition_and_tracking.wav</al:FileName>
+                    <al:BufferLength>10</al:BufferLength>
+                    <al:SampleRate>0</al:SampleRate>
+                  </Combinator>
+                </Builder>
+              </Expression>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="Combinator">
+                  <Combinator xsi:type="wie:KeyDown">
+                    <wie:Filter>None</wie:Filter>
+                    <wie:SuppressRepetitions>false</wie:SuppressRepetitions>
+                  </Combinator>
+                </Builder>
+              </Expression>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="Combinator">
+                  <Combinator xsi:type="rx:WithLatestFrom" />
+                </Builder>
+              </Expression>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="MemberSelector">
+                  <Selector>Item2</Selector>
+                </Builder>
+              </Expression>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="Combinator">
+                  <Combinator xsi:type="al:AudioPlayback">
+                    <al:SampleRate>44100</al:SampleRate>
+                  </Combinator>
+                </Builder>
+              </Expression>
+              <Expression xsi:type="WorkflowOutput" />
+            </Nodes>
+            <Edges>
+              <Edge From="0" To="2" Label="Source2" />
+              <Edge From="1" To="2" Label="Source1" />
+              <Edge From="2" To="3" Label="Source1" />
+              <Edge From="3" To="4" Label="Source1" />
+              <Edge From="4" To="5" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>Exercise_6_7:_Arduino_Capture_Trigger</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="Combinator">
+                  <Combinator xsi:type="ard:AnalogInput">
+                    <ard:PortName>COM9</ard:PortName>
+                    <ard:Pin>5</ard:Pin>
+                  </Combinator>
+                </Builder>
+              </Expression>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="GreaterThanOrEqual">
+                  <Operand xsi:type="IntProperty">
+                    <Value>500</Value>
+                  </Operand>
+                </Builder>
+              </Expression>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="Combinator">
+                  <Combinator xsi:type="BooleanProperty">
+                    <Value>false</Value>
+                  </Combinator>
+                </Builder>
+              </Expression>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="Combinator">
+                  <Combinator xsi:type="ard:DigitalOutput">
+                    <ard:PortName>COM9</ard:PortName>
+                    <ard:Pin>13</ard:Pin>
+                  </Combinator>
+                </Builder>
+              </Expression>
+              <Expression xsi:type="Disable">
+                <Builder xsi:type="io:CsvWriter">
+                  <io:FileName>button_presses.csv</io:FileName>
+                  <io:Append>false</io:Append>
+                  <io:Overwrite>true</io:Overwrite>
+                  <io:Suffix>None</io:Suffix>
+                  <io:IncludeHeader>false</io:IncludeHeader>
+                </Builder>
+              </Expression>
+            </Nodes>
+            <Edges>
+              <Edge From="0" To="1" Label="Source1" />
+              <Edge From="0" To="4" Label="Source1" />
+              <Edge From="1" To="2" Label="Source1" />
+              <Edge From="2" To="3" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>Exercise_8:_Timer_Trigger_Arduino</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:Timer">
+                  <rx:DueTime>PT0.5S</rx:DueTime>
+                  <rx:Period>PT0.5S</rx:Period>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:Take">
+                  <rx:Count>5</rx:Count>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="dsp:Rescale">
+                  <dsp:Min>0</dsp:Min>
+                  <dsp:Max>10</dsp:Max>
+                  <dsp:RangeMin>0</dsp:RangeMin>
+                  <dsp:RangeMax>180</dsp:RangeMax>
+                  <dsp:RescaleType>Linear</dsp:RescaleType>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="ard:ServoOutput">
+                  <ard:PortName>COM9</ard:PortName>
+                  <ard:Pin>4</ard:Pin>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:Repeat" />
+              </Expression>
+              <Expression xsi:type="WorkflowOutput" />
+            </Nodes>
+            <Edges>
+              <Edge From="0" To="1" Label="Source1" />
+              <Edge From="1" To="2" Label="Source1" />
+              <Edge From="2" To="3" Label="Source1" />
+              <Edge From="3" To="4" Label="Source1" />
+              <Edge From="4" To="5" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>Excercise_9_10:_video_tracking</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="vid:VideoCaptureDevice">
+                  <vid:Index>0</vid:Index>
+                  <vid:CaptureProperties>
+                    <vid:CameraProperty>
+                      <vid:Property>Exposure</vid:Property>
+                      <vid:Value>0</vid:Value>
+                      <vid:ControlFlags>Manual</vid:ControlFlags>
+                    </vid:CameraProperty>
+                  </vid:CaptureProperties>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:SampleInterval">
+                  <rx:Interval>PT0S</rx:Interval>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:ConvertColor">
+                  <cv:Conversion>Bgr2Hsv</cv:Conversion>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:HsvThreshold">
+                  <cv:Lower>
+                    <cv:Val0>50</cv:Val0>
+                    <cv:Val1>50</cv:Val1>
+                    <cv:Val2>140</cv:Val2>
+                    <cv:Val3>0</cv:Val3>
+                  </cv:Lower>
+                  <cv:Upper>
+                    <cv:Val0>110</cv:Val0>
+                    <cv:Val1>255</cv:Val1>
+                    <cv:Val2>255</cv:Val2>
+                    <cv:Val3>0</cv:Val3>
+                  </cv:Upper>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:FindContours">
+                  <cv:Mode>External</cv:Mode>
+                  <cv:Method>ChainApproxNone</cv:Method>
+                  <cv:Offset>
+                    <cv:X>0</cv:X>
+                    <cv:Y>0</cv:Y>
+                  </cv:Offset>
+                  <cv:MinArea xsi:nil="true" />
+                  <cv:MaxArea xsi:nil="true" />
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:BinaryRegionAnalysis" />
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:LargestBinaryRegion" />
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:Centroid" />
+              </Expression>
+              <Expression xsi:type="io:CsvWriter">
+                <io:FileName>bug_walk.csv</io:FileName>
+                <io:Append>false</io:Append>
+                <io:Overwrite>true</io:Overwrite>
+                <io:Suffix>None</io:Suffix>
+                <io:IncludeHeader>false</io:IncludeHeader>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:VideoWriter">
+                  <cv:FileName>bug_walk.avi</cv:FileName>
+                  <cv:Suffix>None</cv:Suffix>
+                  <cv:Buffered>true</cv:Buffered>
+                  <cv:Overwrite>true</cv:Overwrite>
+                  <cv:FourCC>FMP4</cv:FourCC>
+                  <cv:FrameRate>30</cv:FrameRate>
+                  <cv:FrameSize>
+                    <cv:Width>0</cv:Width>
+                    <cv:Height>0</cv:Height>
+                  </cv:FrameSize>
+                  <cv:ResizeInterpolation>NearestNeighbor</cv:ResizeInterpolation>
+                </Combinator>
+              </Expression>
+            </Nodes>
+            <Edges>
+              <Edge From="0" To="1" Label="Source1" />
+              <Edge From="1" To="2" Label="Source1" />
+              <Edge From="1" To="9" Label="Source1" />
+              <Edge From="2" To="3" Label="Source1" />
+              <Edge From="3" To="4" Label="Source1" />
+              <Edge From="4" To="5" Label="Source1" />
+              <Edge From="5" To="6" Label="Source1" />
+              <Edge From="6" To="7" Label="Source1" />
+              <Edge From="7" To="8" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>Excercise_11_a:background_subtraction_motion_segmentation</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:FileCapture">
+                  <cv:FileName>bug_walk.avi</cv:FileName>
+                  <cv:PlaybackRate>0</cv:PlaybackRate>
+                  <cv:StartPosition>0</cv:StartPosition>
+                  <cv:PositionUnits>Frames</cv:PositionUnits>
+                  <cv:Loop>false</cv:Loop>
+                  <cv:Playing>true</cv:Playing>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:Grayscale" />
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:Skip">
+                  <rx:Count>1</rx:Count>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:Take">
+                  <rx:Count>1</rx:Count>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:CombineLatest" />
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="dsp:AbsoluteDifference" />
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:Threshold">
+                  <cv:ThresholdValue>128</cv:ThresholdValue>
+                  <cv:MaxValue>255</cv:MaxValue>
+                  <cv:ThresholdType>Binary</cv:ThresholdType>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="WorkflowOutput" />
+            </Nodes>
+            <Edges>
+              <Edge From="0" To="1" Label="Source1" />
+              <Edge From="1" To="2" Label="Source1" />
+              <Edge From="1" To="3" Label="Source1" />
+              <Edge From="2" To="4" Label="Source1" />
+              <Edge From="3" To="4" Label="Source2" />
+              <Edge From="4" To="5" Label="Source1" />
+              <Edge From="5" To="6" Label="Source1" />
+              <Edge From="6" To="7" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>Excercise_11_b:background_subtraction_motion_segmentation</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:FileCapture">
+                  <cv:FileName>bug_walk.avi</cv:FileName>
+                  <cv:PlaybackRate>0</cv:PlaybackRate>
+                  <cv:StartPosition>0</cv:StartPosition>
+                  <cv:PositionUnits>Frames</cv:PositionUnits>
+                  <cv:Loop>false</cv:Loop>
+                  <cv:Playing>true</cv:Playing>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:Grayscale" />
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:Skip">
+                  <rx:Count>1</rx:Count>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="rx:Zip" />
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="dsp:AbsoluteDifference" />
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:Threshold">
+                  <cv:ThresholdValue>5</cv:ThresholdValue>
+                  <cv:MaxValue>255</cv:MaxValue>
+                  <cv:ThresholdType>Binary</cv:ThresholdType>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="WorkflowOutput" />
+            </Nodes>
+            <Edges>
+              <Edge From="0" To="1" Label="Source1" />
+              <Edge From="1" To="2" Label="Source1" />
+              <Edge From="1" To="3" Label="Source2" />
+              <Edge From="2" To="3" Label="Source1" />
+              <Edge From="3" To="4" Label="Source1" />
+              <Edge From="4" To="5" Label="Source1" />
+              <Edge From="5" To="6" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+      <Expression xsi:type="Disable">
+        <Builder xsi:type="GroupWorkflow">
+          <Name>Excercise_12_motion_detection</Name>
+          <Workflow>
+            <Nodes>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:FileCapture">
+                  <cv:FileName>bug_walk.avi</cv:FileName>
+                  <cv:PlaybackRate>0</cv:PlaybackRate>
+                  <cv:StartPosition>0</cv:StartPosition>
+                  <cv:PositionUnits>Frames</cv:PositionUnits>
+                  <cv:Loop>false</cv:Loop>
+                  <cv:Playing>true</cv:Playing>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:Grayscale" />
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="cv:BackgroundSubtraction">
+                  <cv:BackgroundFrames>1</cv:BackgroundFrames>
+                  <cv:AdaptationRate>0</cv:AdaptationRate>
+                  <cv:ThresholdValue>0</cv:ThresholdValue>
+                  <cv:ThresholdType>Binary</cv:ThresholdType>
+                  <cv:SubtractionMethod>Absolute</cv:SubtractionMethod>
+                </Combinator>
+              </Expression>
+              <Expression xsi:type="Combinator">
+                <Combinator xsi:type="dsp:Sum" />
+              </Expression>
+              <Expression xsi:type="MemberSelector">
+                <Selector>Val0</Selector>
+              </Expression>
+              <Expression xsi:type="WorkflowOutput" />
+            </Nodes>
+            <Edges>
+              <Edge From="0" To="1" Label="Source1" />
+              <Edge From="1" To="2" Label="Source1" />
+              <Edge From="2" To="3" Label="Source1" />
+              <Edge From="3" To="4" Label="Source1" />
+              <Edge From="4" To="5" Label="Source1" />
+            </Edges>
+          </Workflow>
+        </Builder>
+      </Expression>
+    </Nodes>
+    <Edges />
+  </Workflow>
+</WorkflowBuilder>

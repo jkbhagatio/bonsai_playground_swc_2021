@@ -1,0 +1,58 @@
+{
+  "format": 1,
+  "restore": {
+    "d:\\Google_Drive_0\\learning\\cs\\languages\\textbooks_and_courses\\bonsai\\swc_en_2021\\worksheets\\scripting\\Extensions.csproj": {}
+  },
+  "projects": {
+    "d:\\Google_Drive_0\\learning\\cs\\languages\\textbooks_and_courses\\bonsai\\swc_en_2021\\worksheets\\scripting\\Extensions.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "d:\\Google_Drive_0\\learning\\cs\\languages\\textbooks_and_courses\\bonsai\\swc_en_2021\\worksheets\\scripting\\Extensions.csproj",
+        "projectName": "Extensions",
+        "projectPath": "d:\\Google_Drive_0\\learning\\cs\\languages\\textbooks_and_courses\\bonsai\\swc_en_2021\\worksheets\\scripting\\Extensions.csproj",
+        "packagesPath": "C:\\Users\\Jai\\.nuget\\packages\\",
+        "outputPath": "d:\\Google_Drive_0\\learning\\cs\\languages\\textbooks_and_courses\\bonsai\\swc_en_2021\\worksheets\\scripting\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "d:\\Google_Drive_0\\learning\\cs\\languages\\textbooks_and_courses\\bonsai\\swc_en_2021\\worksheets\\scripting\\NuGet.Config",
+          "C:\\Users\\Jai\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {},
+          "https://www.myget.org/F/bonsai-community/api/v3/index.json": {},
+          "https://www.myget.org/F/bonsai/api/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "targetAlias": "net472",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net472": {
+          "targetAlias": "net472",
+          "dependencies": {
+            "Bonsai.Core": {
+              "target": "Package",
+              "version": "[2.6.2, )"
+            },
+            "Bonsai.Shaders": {
+              "target": "Package",
+              "version": "[0.25.0, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.403\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
